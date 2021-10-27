@@ -1,0 +1,32 @@
+#!/bin/bash
+
+get_enclosure_temperature () {
+
+local scale=$(cat /sys/bus/i2c/drivers/hdc100x/1-0040/iio\:device2/in_temp_scale)
+local offset=$(cat /sys/bus/i2c/drivers/hdc100x/1-0040/iio\:device2/in_temp_offset)
+local raw=$(cat /sys/bus/i2c/drivers/hdc100x/1-0040/iio\:device2/in_temp_raw)
+
+awk 'BEGIN { print  ( ( '$raw' + '$offset' ) * '$scale' ) / 1000 }'
+
+}
+
+get_cpu_temperature () {
+
+local raw=$(cat /sys/class/thermal/thermal_zone0/temp)
+
+awk 'BEGIN { print '$raw' / 1000 }'
+
+}
+
+
+case $1 in
+  enclosure | external | case )
+    get_enclosure_temperature
+    ;;
+  cpu | "" )
+    get_cpu_temperature
+    ;;
+  * )
+    echo 'error: temperature "'$1'" not known'
+    ;;
+esac

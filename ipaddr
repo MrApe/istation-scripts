@@ -1,0 +1,7 @@
+#!/bin/bash
+
+[ "$1" = "" ] && DEV=eth0 || DEV="$1"
+
+IP=$(/sbin/ip -o -4 addr list "$DEV" | /usr/bin/awk '{print $4}' | /usr/bin/cut -d/ -f1)
+
+[ "$IP" = "" ] && echo "not connected" || echo $IP

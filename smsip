@@ -1,0 +1,30 @@
+#!/bin/sh
+
+RECEIVER="$1"
+
+if [ "$RECEIVER" = "" ]; then
+  echo "no receiver phone number given"
+  exit -1
+fi
+
+INTERFACES="wwan0 eth0 vpn0"
+
+CHANGED=0
+MESSAGE="$(hostname) ip change detected"
+
+for INTERFACE in $INTERFACES; do
+  IP=
+  STATE_FILE="/var/run/${INTERFACE}.ip"
+  [ -f ${STATE_FILE} ] && OLD_IP=$(cat ${STATE_FILE}) || OLD_IP=
+  IP=$(ip a show dev ${INTERFACE} scope global | grep inet | sed 's/^.*inet //g' | sed 's-/.*--g')  
+  [ "$OLD_IP" != "$IP" ] && CHANGED=1
+  MESSAGE="$MESSAGE
+${INTERFACE}: $IP"
+  echo $IP > ${STATE_FILE}
+done
+
+if (( $CHANGED )) || [ "$2" = "-f" ]; then
+  dbus-send --system --type=method_call --dest=org.ofono \
+    /quectelqmi_0 org.ofono.MessageManager.SendMessage \
+    string:"${RECEIVER}" string:"$MESSAGE" 
+fi

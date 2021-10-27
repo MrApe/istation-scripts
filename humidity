@@ -1,0 +1,7 @@
+#!/bin/bash
+
+RAW=$(cat /sys/bus/i2c/drivers/hdc100x/1-0040/iio\:device2/in_humidityrelative_raw)
+
+SCALE=$(cat /sys/bus/i2c/drivers/hdc100x/1-0040/iio\:device2/in_humidityrelative_scale)
+
+awk 'BEGIN {print '$RAW' * '$SCALE' }'
