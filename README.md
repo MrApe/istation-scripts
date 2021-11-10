@@ -70,15 +70,20 @@ $ temperature enclosure
 
 Simple data usage logger script
 
-### installation with cron
+### installation
+
+Copy the script to e.g. `/usr/bin/`
+
+    cp usage /usr/bin/usage
+    chmod +x /usr/bin/usage
 
 monitor every minute:
 
-    - * * * * /mnt/usb/monitor_usage.sh eth0
+    - * * * * /usr/bin/usage eth0
 
 ### usage log format
 
-The log is written to a file called `usage_[DEVICE].log`:
+The log is written to `/var/log/` to a file called `usage_[DEVICE].log`:
 
     DA TI TX_C RX_C SUM TX_L RX_L SUM_L TX_M RX_M SUM_M 
 
@@ -97,6 +102,10 @@ The log is written to a file called `usage_[DEVICE].log`:
 **example log line:**
 
 2021-10-18 11:38:00 31832148 1191376080 1223208228 6528 266613 273141 76961 2174380 2251341
+
+### rotation
+
+If the sum of all `usage_*`-files is above `500m` (see the file to change this), the oldest usage log is removed.
 
 ### current usage (`/run`)
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PREFIX="/run/media/sda1"
+PREFIX="/var/log"
 
 function humanize() {
   X=$1
@@ -104,3 +104,10 @@ echo "$DATE $TX_BYTES $RX_BYTES $SUM $CHANGE_TX_BYTES $CHANGE_RX_BYTES $CHANGE_S
 echo "$(humanize ${CHANGE_RX_BYTES_MONTH} )" > /run/usage_${DEV}.rx
 echo "$(humanize ${CHANGE_TX_BYTES_MONTH} )" > /run/usage_${DEV}.tx
 echo "$(humanize ${CHANGE_SUM_MONTH} )" > /run/usage_${DEV}
+
+#rotate usage logs
+
+USAGE_SIZE=$(du -ca ${PREFIX}/usage_* | tail -1 | cut -f1)
+if [ $USAGE_SIZE -gt $USAGE_SIZE_LIMIT ]; then
+  rm $(ls -1 ${PREFIX}/usage_* | head -n1)
+fi
