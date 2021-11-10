@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PREFIX="/var/log"
+USAGE_SIZE_LIMIT=500000
 
 function humanize() {
   X=$1
